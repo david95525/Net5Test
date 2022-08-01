@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "登入頁面";
+    if (TempData["message"] != null)
+    {
+        Console.WriteLine(TempData["message"]);
+    }
+}
+
+@section scripts{
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-firestore.js"></script>
+    @*<script src="~/js/customfirebase.js"></script>*@
+}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                <div class="card-header">
+                    <h3 class="text-center font-weight-light my-4">Login</h3>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Login", "Account", new { returnUrl = Url.Action("Index", "Home") },
+          FormMethod.Post, null, new { @class = "login-form fade-in-effect" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-floating mb-3">
+                            <input class="form-control" name="Email" id="email" type="email" placeholder="name@example.com" value="david.wu@microlife.com.tw" />
+                            <label for="inputEmail">Email address</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" name="Password" id="password" type="password" placeholder="Password" value="moon1104" />
+                            <label for="inputPassword">Password</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
+                            <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <a class="small">Forgot Password?</a>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small">
+                        <a asp-controller="account" asp-action="register">Need an account? Sign up!</a>
+                    </div>
+                </div>
+                <div style="width:100%; height:auto; float:left; display:inline;text-align: center;">
+                    <a asp-action="FbLogin" asp-controller="ThirdParty"><img src="~/assets/img/icon_facebook.svg" width="64" style="transform: translateY(-2px);" alt="facebookicon"></a>
+                    &nbsp;&nbsp;
+                   
+                    <a onclick="facebookLogin()" href="#"><img src="~/assets/img/icon_facebook.svg" width="64" style="transform: translateY(-2px);" alt="facebookicon">firebase登入</a>
+                    &nbsp;&nbsp;
+                    <a onclick="googleLogin()" href="#"><img src="~/assets/img/google-icon.svg" width="64" style="transform: translateY(-2px);" alt="googleicon"></a>
+                    &nbsp;&nbsp;
+                    <a onclick="appleLogin()" href="#"><img src="~/assets/img/apple_icon.svg" width="64" style="transform: translateY(-2px);background-color:black;border-radius:150px;" alt="appleicon"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

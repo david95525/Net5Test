@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+  string code=  ViewBag.code;
+}
+<div>
+    <label>登入成功頁面</label>
+    <form action="@Url.Action("Token","OAuth2")" method="post">
+        <div>client_id</div>
+        <input type="text" name="client_id" value="499268d0db1f4214aeef7f59e7fe4649" />
+        <div>clientSecret</div>
+        <input type="text" name="client_secret" value="9e0e028a8284428da2eb5cb208c542a8" />
+        <div>redirect_uri</div>
+        <input type="text" name="redirect_uri" value="@Url.Action("Test1", "APPtest")" />
+        <div>grant_type</div>
+        <input type="text" name="grant_type" value="authorization_code" />
+        <div>code</div>
+        <input type="text" name="code" value="@code" />
+        <button type="submit">獲取token</button>
+    </form>
+</div>

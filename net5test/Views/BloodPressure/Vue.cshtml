@@ -1,0 +1,280 @@
+﻿@{
+    ViewData["Title"] = "BloodPressure";
+}
+
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="~/js/moment-with-locales.min.js"></script>
+<h1>BloodPressure</h1>
+<div id="bloodpressure">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card card-primary">
+                        <!-- form start -->
+                        <form role="form">
+                            <div class="card-body">
+                                <div class="row form-group">
+                                    <div class="form-group">
+                                        <label class="control-label">DateMeasurementStart</label>
+                                        <div class="startDate">
+                                            <input class="form-control" id="start" type="date" name="startdate" v-model="searchitem.startdate">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">DateMeasurementEnd</label>
+                                        <div class="endDate">
+                                            <input class="form-control" id="end" type="date" name="enddate" v-model="searchitem.enddate">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <button class="btn btn-outline-primary g-mr-10" type="button" v-on:click="Search()">Search</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                        <div>
+                            <button class="btn btn-outline-primary " data-toggle="modal" data-target="#AddForm">Add Measurement</button>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-primary " data-toggle="modal" data-target="#Export">Export data</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="bp_table" class="table table-bordered table-hover " style="width: 100%;">
+                        <tr>
+                            <td>email </td>
+                            <td>name</td>
+                            <td>sys</td>
+                            <td>dia</td>
+                            <td>pul</td>
+                            <td>update_date</td>
+                        </tr>
+                        <tr v-for="item in bplist">
+                            <td>{{item.email}} </td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.sys}}</td>
+                            <td>{{item.dia}}</td>
+                            <td>{{item.pul}}</td>
+                            <td>{{item.update_date}}</td>
+                        </tr>
+
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <!--Add視窗-->
+    <div class="modal fade" id="AddForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Add</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <div class="form-row mb-4">
+                            <div class="col-auto">
+                                <label data-error="wrong" data-success="right" for="defaultForm-pass">收縮壓</label>
+                                <input type="number" id="Addsys" name="sys" v-model="additem.sys" class="form-control validate" >
+                            </div>
+                            <div class="col-auto">
+                                <label data-error="wrong" data-success="right" for="defaultForm-pass">舒張壓</label>
+                                <input type="number" id="AddDia" name="Dia" v-model="additem.dia"  class="form-control validate" >
+                            </div>
+                            <div class="col">
+                                <label data-error="wrong" data-success="right" for="defaultForm-pass">心率</label>
+                                <input type="number" id="AddPul" name="Pul" v-model="additem.pul"  class="form-control validate" >
+                            </div>
+                        </div>
+                        <div class="form-row mb-4">
+                            AFIB
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="NoAFIB" name="afib" class="custom-control-input" checked value="0" v-model="additem.afib">
+                                <label class="custom-control-label" for="NoAFIB">無</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="AFIB" name="afib" class="custom-control-input" value="1" v-model="additem.afib">
+                                <label class="custom-control-label" for="AFIB">有量測到</label>
+                            </div>
+                        </div>
+                        <div class="form-row mb-4">
+                            脈搏不規則偵測
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="nopad" name="pad" class="custom-control-input" value="0" checked v-model="additem.pad">
+                                <label class="custom-control-label" for="nopad">無</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="pad" name="pad" class="custom-control-input" value="1" v-model="additem.pad">
+                                <label class="custom-control-label" for="pad">有量測到</label>
+                            </div>
+                        </div>
+                        <div class="form-row mb-4">
+                            <label class="custom-control-label">mac_address</label>
+                            <input type="text" name="mac_address"  v-model="additem.mac_address"/>
+                            <label class="custom-control-label">mode</label>
+                            <input type="number" name="mode"  v-model="additem.mode"/>
+                        </div>
+                        <div class="form-row mb-4">
+                            <label class="custom-control-label">更新日期</label>
+                            <input type="date" name="datetime" v-model="additem.date"/>
+                            <label class="custom-control-label" >更新時間</label>
+                            <input type="time" name="datetime" v-model="additem.time"/>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button class="btn btn-outline-primary " v-on:click="Add()" data-dismiss="modal" aria-label="Close">Save</button>
+                            <button class="btn btn-outline-primary " data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Export視窗-->
+    <div class="modal fade" id="Export" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Add</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="Export">
+                        <div class="form-row mb-4">
+                            <label class="custom-control-label">startdate</label>
+                            <input type="date" name="startdate" />
+                            <label class="custom-control-label">enddate</label>
+                            <input type="time" name="enddate" />
+                        </div>
+                        <div class="form-row mb-4">
+                            Category
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="ExportBP" name="Category" class="custom-control-input" checked value="0">
+                                <label class="custom-control-label" for="ExportBP">BloodPressure</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="others" name="Category" class="custom-control-input" value="1">
+                                <label class="custom-control-label" for="others">others</label>
+                            </div>
+                        </div>
+                        <div class="form-row mb-4">
+                            Format
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="CSV" name="Format" class="custom-control-input" checked value="1">
+                                <label class="custom-control-label" for="CSV">CSV</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="PDF" name="Format" class="custom-control-input" value="1">
+                                <label class="custom-control-label" for="PDF">PDF</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button class="btn btn-outline-primary " onclick="Export()" data-dismiss="modal" aria-label="Close">Export</button>
+                            <button class="btn btn-outline-primary " data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const app= {
+        data() {
+            return {
+                bplist: Array,
+                additem: {
+                    sys: 120,
+                    dia: 70,
+                    pul: 65,
+                    mac_address:"00:00:00:00:00:00",
+                    mode:0,
+                    afib: 0,
+                    pad: 0
+                },
+                searchitem: {}
+            }
+        },
+        methods: {
+            Add() {
+                this.additem.datetime = this.additem.date +" "+ this.additem.time;
+                delete this.additem.date;
+                delete this.additem.time;
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddBpmData", "BloodPressure")",
+                    data: this.additem,
+                    dataType:"json",
+                    success: function (data) {
+                        console.log(data);
+                        if (data != null) {
+                            alert("新增成功");
+                        }
+                    }
+                });
+            },
+            Search() {
+                 axios({
+                method: 'POST',
+                url: '@Url.Action("GetBpmData", "BloodPressure")',
+                params: {
+                    start: 0,
+                    length: 10,
+                    startdate : this.searchitem.startdate,
+                    enddate :this.searchitem.enddate
+                }
+            })
+                .then((response) => {
+                    this.bplist = response.data.data;
+                   for (let i = 0; i < this.bplist.length; i++)
+                   {
+                       this.bplist[i].update_date = new Date(this.bplist[i].update_date);
+            }
+        } )
+                .catch(function (error) {
+                    console.log(error);
+                });
+            }
+        },
+        mounted() {
+            axios({
+                method: 'POST',
+                url: '@Url.Action("GetBpmData", "BloodPressure")',
+                params: {
+                    start: 0,
+                    length: 10,
+                    startdate : this.searchitem.startdate,
+                    enddate :this.searchitem.enddate
+                }
+            })
+                .then((response) => {
+                    this.bplist = response.data.data;
+                   for (let i = 0; i < this.bplist.length; i++)
+                   {
+                       this.bplist[i].update_date = new Date(this.bplist[i].update_date);
+            }
+        } )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    }
+
+    Vue.createApp(app).mount('#bloodpressure');
+
+</script>
